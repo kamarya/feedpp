@@ -1,5 +1,5 @@
-# feedpp
-Feed Plus Plus - A C++ Feed Parser
+# Feed Plus Plus
+A C++ Feed Parser Library
 ## Description
 This work is an extract of
 [Newsbeuter](https://github.com/akrennmair/newsbeuter)
