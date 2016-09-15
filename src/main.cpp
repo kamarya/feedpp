@@ -2,7 +2,8 @@
 #include "rsspp.h"
 #include "parser.h"
 #include "rsspp_internal.h"
-#include <time.h>
+#include <ctime>
+#include <cstring>
 
 int main(void) {
 	lemon::test<> lemon(74);

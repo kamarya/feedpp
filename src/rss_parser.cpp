@@ -7,8 +7,8 @@
 #include "rsspp_internal.h"
 #include <cstring>
 #include <libxml/tree.h>
-#include <time.h>
-#include <locale.h>
+#include <ctime>
+#include <locale>
 #include <iostream>
 #include <array>
 

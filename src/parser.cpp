@@ -6,43 +6,49 @@
 
 #include <rsspp.h>
 #include <exception.h>
+#include <utils.h>
+
 #include <parser.h>
 #include <rsspp_internal.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <curl/curl.h>
-#include <utils.h>
+
 #include <cstring>
 
 using namespace feedpp;
 
-static size_t my_write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
+static size_t my_write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
 	std::string * pbuf = static_cast<std::string *>(userp);
 	pbuf->append(static_cast<const char *>(buffer), size * nmemb);
 	return size * nmemb;
 }
 
-namespace rsspp {
+namespace rsspp
+{
 
 parser::parser(unsigned int timeout, const char * user_agent, const char * proxy, const char * proxy_auth, curl_proxytype proxy_type)
 	: to(timeout), ua(user_agent), prx(proxy), prxauth(proxy_auth), prxtype(proxy_type), doc(0), lm(0) {
 }
 
-parser::~parser() {
+parser::~parser()
+{
 	if (doc)
 		xmlFreeDoc(doc);
 }
 
-struct header_values {
+struct header_values
+{
 	time_t lastmodified;
 	std::string etag;
 
 	header_values()
-		: lastmodified(0) {
-	}
+		: lastmodified(0) {/* empty */}
 };
 
-static size_t handle_headers(void * ptr, size_t size, size_t nmemb, void * data) {
+static size_t handle_headers(void * ptr, size_t size, size_t nmemb, void * data)
+{
 	char * header = new char[size*nmemb + 1];
 	header_values * values = (header_values *)data;
 
@@ -69,7 +75,8 @@ feed parser::parse_url(const std::string& url,
                        CURL *ehandle,
                        time_t lastmodified,
                        const std::string& etag,
-                       const std::string& cookie_cache) {
+                       const std::string& cookie_cache)
+{
   std::string buf;
   CURLcode ret;
 
@@ -131,7 +138,8 @@ feed parser::parse_url(const std::string& url,
   lm = hdrs.lastmodified;
   et = hdrs.etag;
 
-  if (custom_headers) {
+  if (custom_headers)
+  {
     curl_easy_setopt(easyhandle, CURLOPT_HTTPHEADER, 0);
     curl_slist_free_all(custom_headers);
   }
@@ -175,7 +183,8 @@ feed parser::parse_buffer(const char * buffer, size_t size, const char * url) {
 	return f;
 }
 
-feed parser::parse_file(const std::string& filename) {
+feed parser::parse_file(const std::string& filename)
+{
 	doc = xmlReadFile(filename.c_str(), NULL, XML_PARSE_RECOVER | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
 	if (doc == NULL) {
 		throw exception(std::string("could not parse file"));

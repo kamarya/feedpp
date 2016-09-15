@@ -2,7 +2,7 @@
 #define UTIL_H_
 
 #include <vector>
-#include <string>
+#include <cstring>
 #include <stdexcept>
 
 #include <curl/curl.h>
