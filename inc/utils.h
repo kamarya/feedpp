@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cstring>
+#include <string>      // due to a bug in Xcode
 #include <stdexcept>
 
 #include <curl/curl.h>

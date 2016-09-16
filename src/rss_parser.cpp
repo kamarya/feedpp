@@ -1,17 +1,17 @@
 /* Copyright (C) 2008-2012 Andreas Krennmair <ak@newsbeuter.org>
- * Modified work Copyright (C) 2015 Behrooz Aliabadi
+ * Modified work Copyright (C) 2016 Behrooz Aliabadi
  * Licensed under the MIT/X Consortium License. See file LICENSE
  * for more information.
  */
 
-#include "rsspp_internal.h"
-#include <cstring>
 #include <libxml/tree.h>
+#include <cstring>
 #include <ctime>
 #include <locale>
 #include <iostream>
 #include <array>
 
+#include "rsspp_internal.h"
 
 namespace rsspp {
 
