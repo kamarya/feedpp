@@ -7,11 +7,14 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 # Checks for programs.
-AC_PROG_CXX([g++])
-AC_PROG_CC([gcc cc])
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
 
 AC_ENABLE_SHARED
-AC_PROG_LIBTOOL(libtool)
+
 
 # Checks for libraries.
 LIBXML2_REQUIRED_VERSION=2.9.0
