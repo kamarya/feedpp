@@ -9,13 +9,16 @@ mkdir release
 cd release
 ../configure
 make
-make install
 ```
 If you do not find the configure script in the package
 you may need to generate it by running ```autogen.sh```.
 
-A set of unit tests are included in ```src/main.cpp``` that may
+A set of unit tests are included in ```src/unitest.cpp``` that may
 guide you as examples when using the library.
+
+To install the library on your machine run ```make install```.
+You may need to run ```ldconfig``` in order to update the shared library cache.
+
 
 ## License
 The original and the modified works are licensed under

@@ -10,7 +10,7 @@
 
 #define RSS_1_0_NS "http://purl.org/rss/1.0/"
 
-namespace rsspp {
+namespace feedpp {
 
 void rss_10_parser::parse_feed(feed& f, xmlNode * rootNode) {
 	if (!rootNode)

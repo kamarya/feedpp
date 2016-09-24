@@ -4,15 +4,15 @@
  * for more information.
  */
 
-#ifndef RSSPP_H
-#define RSSPP_H
+#ifndef _RSSPP_H
+#define _RSSPP_H
 
 #include <string>
 #include <vector>
 #include <libxml/parser.h>
 #include <curl/curl.h>
 
-namespace rsspp {
+namespace feedpp {
 
 enum version {
   UNKNOWN = 0,
@@ -26,6 +26,20 @@ enum version {
   ATOM_0_3_NONS,
   TTRSS_JSON,
   NEWSBLUR_JSON
+};
+
+static const char* str_version[] = {
+    "UNKNOWN",
+    "RSS_0_91",
+    "RSS_0_92",
+    "RSS_1_0",
+    "RSS_2_0",
+    "ATOM_0_3",
+    "ATOM_1_0",
+    "RSS_0_94",
+    "ATOM_0_3_NONS",
+    "TTRSS_JSON",
+    "NEWSBLUR_JSON"
 };
 
 struct item {
@@ -59,8 +73,7 @@ struct item {
 
 struct feed {
   std::string encoding;
-
-  version rss_version;
+  version     rss_version;
   std::string title;
   std::string title_type;
   std::string description;

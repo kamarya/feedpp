@@ -1,7 +1,7 @@
 #include "rsspp_internal.h"
 #include "exception.h"
 
-namespace rsspp {
+namespace feedpp {
 
 std::shared_ptr<rss_parser> rss_parser_factory::get_object(feed& f, xmlDocPtr doc)
 {

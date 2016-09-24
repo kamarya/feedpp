@@ -9,7 +9,7 @@
 #include "exception.h"
 #include <cstring>
 
-namespace rsspp {
+namespace feedpp {
 
 
 void atom_parser::parse_feed(feed& f, xmlNode * rootNode) {

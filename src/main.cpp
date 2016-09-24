@@ -6,7 +6,7 @@
 #include <cstring>
 
 int main(void) {
-	lemon::test<> lemon(74);
+	lemon::test<> lemon(78);
 
 	rsspp::parser p;
 
@@ -134,8 +134,14 @@ int main(void) {
   mktime(&t); // The test does not pass without it
   lemon.is(rsspp::rss_parser::to_rfc1123(t), "Thu, 31 Dec 2015 13:03:15 GMT", "rfc1123 conversion");
 
+  std::cout << std::endl << "-------------------------------" << std::endl;
 
-  f = p.parse_url("http://www.france24.com/fr/eco-tech/rss/");
+  rsspp::parser pp ( 30,
+                     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 GTB5",
+                     "10.66.243.130:8080");
+
+  f = pp.parse_url("http://www.france24.com/fr/eco-tech/rss/");
+  //f = pp.parse_url("http://www.artificialworlds.net/blog/feed/");
   std::cout << std::endl << f.title << std::endl;
 
 	return lemon.done() ? 0 : 1;

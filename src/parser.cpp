@@ -25,7 +25,7 @@ static size_t my_write_data(void *buffer, size_t size, size_t nmemb, void *userp
 	return size * nmemb;
 }
 
-namespace rsspp
+namespace feedpp
 {
 
 parser::parser(unsigned int timeout, const char * user_agent, const char * proxy, const char * proxy_auth, curl_proxytype proxy_type)
@@ -154,7 +154,7 @@ feed parser::parse_url(const std::string& url,
     curl_easy_cleanup(easyhandle);
 
   if (ret != 0) {
-    throw exception(curl_easy_strerror(ret));
+    throw exception(curl_easy_strerror(ret), ret);
   }
 
 

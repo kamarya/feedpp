@@ -11,7 +11,7 @@
 
 using namespace feedpp;
 
-namespace rsspp {
+namespace feedpp {
 
 void rss_20_parser::parse_feed(feed& f, xmlNode * rootNode) {
 	if (!rootNode)

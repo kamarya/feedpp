@@ -13,7 +13,7 @@
 
 #include "rsspp_internal.h"
 
-namespace rsspp {
+namespace feedpp {
 
 std::string rss_parser::get_content(xmlNode * node) {
 	std::string retval;
