@@ -1,11 +1,12 @@
-#include "lemon.h"
-#include "rsspp.h"
-#include "parser.h"
-#include "rsspp_internal.h"
 #include <ctime>
 #include <cstring>
 
-int main(void) {
+#include "rsspp_internal.h"
+#include "lemon.h"
+#include "feedpp.h"
+
+int main(void)
+{
     lemon::test<> lemon(78);
 
     feedpp::parser p;

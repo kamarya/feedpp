@@ -1,7 +1,6 @@
 # Feed Plus Plus
 This is a C++ feed parser library. It is originally extracted from
-[Newsbeuter](https://github.com/akrennmair/newsbeuter)
-project.
+[Newsbeuter](https://github.com/akrennmair/newsbeuter).
 ## Build and Install
 
 ```
@@ -9,6 +8,8 @@ mkdir release
 cd release
 ../configure
 make
+make check
+
 ```
 If you do not find the configure script in the package
 you may need to generate it by running ```autogen.sh```.
