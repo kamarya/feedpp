@@ -5,5 +5,6 @@
 #include "rsspp.h"
 #include "utils.h"
 #include "parser.h"
+#include "date.h"
 
 #endif

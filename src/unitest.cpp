@@ -7,7 +7,7 @@
 
 int main(void)
 {
-    lemon::test<> lemon(78);
+    lemon::test<> lemon(83);
 
     feedpp::parser p;
 
@@ -134,6 +134,12 @@ int main(void)
     t.tm_hour = 13; t.tm_min = 03; t.tm_sec = 15;
     mktime(&t); // The test does not pass without it
     lemon.is(feedpp::rss_parser::to_rfc1123(t), "Thu, 31 Dec 2015 13:03:15 GMT", "rfc1123 conversion");
+
+    lemon.ok(feedpp::date::validate("Wed, 31 Dec 2008 13:03:15 GMT", REGEX_RFC1123), "regex rfc1123");
+    lemon.ok(feedpp::date::validate("Sat, 28 Aug 2004 08:15:38 GMT", REGEX_RFC1123), "regex rfc1123");
+    lemon.ok(feedpp::date::validate("Tue, 30 Dec 2008 18:03:15 +0000", REGEX_RFC822), "regex rfc822");
+    lemon.ok(feedpp::date::validate("1994-11-05T08:15:30-05:00", REGEX_W3CDTF), "regex w3cdtf");
+    lemon.ok(feedpp::date::validate("2015-01-17T18:23:02+06:45", REGEX_ISO8601), "regex iso8601");
 
     return lemon.done() ? 0 : 1;
 }
