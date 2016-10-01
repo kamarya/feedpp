@@ -9,7 +9,6 @@ cd release
 ../configure
 make
 make check
-
 ```
 If you do not find the configure script in the package
 you may need to generate it by running ```autogen.sh```.

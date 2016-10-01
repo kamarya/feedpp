@@ -5,13 +5,16 @@ AM_INIT_AUTOMAKE([feedpp],[0.5.0])
 AC_CONFIG_SRCDIR([src/parser.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_MACRO_DIRS([m4])
 
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
+AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
 
 AC_ENABLE_SHARED
 
