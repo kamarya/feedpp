@@ -256,7 +256,7 @@ feed parser::parse_xmlnode(xmlNode* node) {
 				}
 			}
 
-			std::shared_ptr<rss_parser> parser = rss_parser_factory::get_object(f, doc);
+			std::shared_ptr<rss_parser> parser = factory::get_object(f, doc);
 
 			try {
 				parser->parse_feed(f, node);

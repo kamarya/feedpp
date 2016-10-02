@@ -1,3 +1,6 @@
+#ifndef _DATE_H
+#define _DATE_H
+
 #define REGEX_RFC822        "(((Mon)|(Tue)|(Wed)|(Thu)|(Fri)|(Sat)|(Sun)), *)?\\d\\d? +"\
                             "((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec))"\
                             " +\\d\\d(\\d\\d)? +\\d\\d:\\d\\d(:\\d\\d)? +(([+\\-]?\\d\\d\\d\\d)"\
@@ -24,3 +27,5 @@ class date
     static bool validate(const std::string& date, const char* str_regex);
 };
 }
+
+#endif

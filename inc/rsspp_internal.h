@@ -1,8 +1,8 @@
 /* Copyright (C) 2008-2012 Andreas Krennmair <ak@newsbeuter.org>
- * Modified work Copyright (C) 2016 Behrooz Aliabadi
- * Licensed under the MIT/X Consortium License. See file LICENSE
- * for more information.
- */
+* Modified work Copyright (C) 2016 Behrooz Aliabadi
+* Licensed under the MIT/X Consortium License. See file LICENSE
+* for more information.
+*/
 
 #ifndef _RSSPP_INTERNAL_H
 #define _RSSPP_INTERNAL_H
@@ -22,8 +22,9 @@
 
 namespace feedpp {
 
-struct rss_parser {
+  class rss_parser {
 
+  public:
     virtual void parse_feed(feed& f, xmlNode * rootNode) = 0;
     rss_parser(xmlDocPtr d) : doc(d) { }
     virtual ~rss_parser() { }
@@ -31,7 +32,7 @@ struct rss_parser {
     static std::string validate_date(const std::string& date);
     static std::string to_rfc1123(const struct tm& date);
 
-    protected:
+  protected:
     std::string get_content(xmlNode * node);
     std::string get_xml_content(xmlNode * node);
     void cleanup_namespaces(xmlNodePtr node);
@@ -40,55 +41,56 @@ struct rss_parser {
     bool node_is(xmlNode * node, const char * name, const char * ns_uri = NULL);
     xmlDocPtr doc;
 
-};
+  };
 
-struct rss_09x_parser : public rss_parser {
+  struct rss_09x_parser : public rss_parser {
 
     virtual void parse_feed(feed& f, xmlNode * rootNode);
     rss_09x_parser(xmlDocPtr doc) : rss_parser(doc), ns(NULL) { }
     virtual ~rss_09x_parser();
-    protected:
+  protected:
     const char * ns;
-    private:
+  private:
     item parse_item(xmlNode * itemNode);
 
-};
+  };
 
-struct rss_20_parser : public rss_09x_parser {
+  struct rss_20_parser : public rss_09x_parser {
 
     rss_20_parser(xmlDocPtr doc) : rss_09x_parser(doc) { }
     virtual void parse_feed(feed& f, xmlNode * rootNode);
     virtual ~rss_20_parser() { }
 
-};
+  };
 
-struct rss_10_parser : public rss_parser {
+  struct rss_10_parser : public rss_parser {
 
     virtual void parse_feed(feed& f, xmlNode * rootNode);
     rss_10_parser(xmlDocPtr doc) : rss_parser(doc) { }
     virtual ~rss_10_parser() { }
 
-};
+  };
 
 
-struct atom_parser : public rss_parser {
+  struct atom_parser : public rss_parser {
 
     virtual void parse_feed(feed& f, xmlNode * rootNode);
     atom_parser(xmlDocPtr doc) : rss_parser(doc), ns(0) { }
     virtual ~atom_parser() { }
 
-    private:
+  private:
     item parse_entry(xmlNode * itemNode);
     std::string globalbase;
     const char * ns;
 
-};
+  };
 
-struct rss_parser_factory {
+  class factory {
 
+  public:
     static std::shared_ptr<rss_parser> get_object(feed& f, xmlDocPtr doc);
 
-};
+  };
 
 }
 
