@@ -6,6 +6,7 @@
 
 #include "rsspp_internal.h"
 #include "utils.h"
+#include "date.h"
 #include "exception.h"
 #include <cstring>
 
@@ -48,7 +49,7 @@ void atom_parser::parse_feed(feed& f, xmlNode * rootNode) {
 				f.link = feedpp::utils::absolute_url(globalbase, get_prop(node, "href"));
 			}
 		} else if (node_is(node, "updated", ns)) {
-			f.pubDate = w3cdtf_to_rfc822(get_content(node));
+			f.pubDate = date::format(get_content(node));
 		} else if (node_is(node, "entry", ns)) {
 			f.items.push_back(parse_entry(node));
 		}
@@ -98,9 +99,9 @@ item atom_parser::parse_entry(xmlNode * entryNode) {
 			it.guid = get_content(node);
 			it.guid_isPermaLink = false;
 		} else if (node_is(node, "published", ns)) {
-			it.pubDate = w3cdtf_to_rfc822(get_content(node));
+			it.pubDate = date::format(get_content(node));
 		} else if (node_is(node, "updated", ns)) {
-			updated = w3cdtf_to_rfc822(get_content(node));
+			updated = date::format(get_content(node));
 		} else if (node_is(node, "link", ns)) {
 			std::string rel = get_prop(node, "rel");
 			if (rel == "" || rel == "alternate") {

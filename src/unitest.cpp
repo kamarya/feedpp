@@ -111,29 +111,6 @@ int main(void)
     // test of W3CDTF parser
     setlocale(LC_TIME, "en_US.utf8");
 
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("2008"), "Tue, 01 Jan 2008 00:00:00 +0000", "W3CDTF year only");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("2008-12"), "Mon, 01 Dec 2008 00:00:00 +0000", "W3CDTF year-month only");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("2008-12-30"), "Tue, 30 Dec 2008 00:00:00 +0000", "W3CDTF year-month-day only");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("2008-12-30T13:03:15Z"), "Tue, 30 Dec 2008 13:03:15 +0000", "W3CDTF with Z timezone");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("2008-12-30T10:03:15-08:00"), "Tue, 30 Dec 2008 18:03:15 +0000", "W3CDTF with -08:00 timezone");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("foobar"), "", "Invalid W3CDTF (foobar)");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822("-3"), "", "Invalid W3CDTF (negative number)");
-    lemon.is(feedpp::rss_parser::__w3cdtf_to_rfc822(""), "", "Invalid W3CDTF (empty string)");
-
-    lemon.is(feedpp::rss_parser::validate_date("2008"), "2008", "validate year only");
-    lemon.is(feedpp::rss_parser::validate_date("2008-12-30T13:03:15Z"), "2008-12-30T13:03:15Z", "validate with Z timezone");
-
-    struct std::tm t;
-    std::memset(&t, 0, sizeof(tm));
-    t.tm_year = 2008 - 1900; t.tm_mon = 11; t.tm_mday = 31;
-    t.tm_hour = 13; t.tm_min = 03; t.tm_sec = 15;
-    mktime(&t); // The test does not pass without it
-    lemon.is(feedpp::rss_parser::to_rfc1123(t), "Wed, 31 Dec 2008 13:03:15 GMT", "rfc1123 conversion");
-
-    t.tm_year = 2015 - 1900; t.tm_mon = 11; t.tm_mday = 31;
-    t.tm_hour = 13; t.tm_min = 03; t.tm_sec = 15;
-    mktime(&t); // The test does not pass without it
-    lemon.is(feedpp::rss_parser::to_rfc1123(t), "Thu, 31 Dec 2015 13:03:15 GMT", "rfc1123 conversion");
 
     lemon.ok(feedpp::date::validate("Wed, 31 Dec 2008 13:03:15 GMT", REGEX_RFC1123), "regex rfc1123");
     lemon.ok(feedpp::date::validate("Sat, 28 Aug 2004 08:15:38 GMT", REGEX_RFC1123), "regex rfc1123");

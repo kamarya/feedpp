@@ -8,6 +8,7 @@
 #include <exception.h>
 #include <utils.h>
 
+#include <log.h>
 #include <parser.h>
 #include <rsspp_internal.h>
 #include <libxml/parser.h>
@@ -198,7 +199,7 @@ feed parser::parse_file(const std::string& filename)
 		f.encoding = (const char *)doc->encoding;
 	}
 
-	//LOG(LOG_INFO, "parser::parse_file: encoding = %s", f.encoding.c_str());
+	LOG_INFO("parser::parse_file: encoding = %s", f.encoding.c_str());
 
 	return f;
 }

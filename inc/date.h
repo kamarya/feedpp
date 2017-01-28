@@ -25,6 +25,8 @@ class date
 {
   public:
     static bool validate(const std::string& date, const char* str_regex);
+    static std::string format(const std::string& date);
+    static char* w3cdtf_to_tm(const std::string& date, struct tm *tm_arg);
 };
 }
 

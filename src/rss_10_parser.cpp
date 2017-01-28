@@ -6,6 +6,7 @@
 
 #include "rsspp_internal.h"
 #include "exception.h"
+#include "date.h"
 #include <cstring>
 
 #define RSS_1_0_NS "http://purl.org/rss/1.0/"
@@ -27,7 +28,7 @@ void rss_10_parser::parse_feed(feed& f, xmlNode * rootNode) {
 				} else if (node_is(cnode, "description", RSS_1_0_NS)) {
 					f.description = get_content(cnode);
 				} else if (node_is(cnode, "date", DC_URI)) {
-					f.pubDate = w3cdtf_to_rfc822(get_content(cnode));
+					f.pubDate = date::format(get_content(cnode));
 				} else if (node_is(cnode, "creator", DC_URI)) {
 					f.dc_creator = get_content(cnode);
 				}
@@ -44,7 +45,7 @@ void rss_10_parser::parse_feed(feed& f, xmlNode * rootNode) {
 				} else if (node_is(itnode, "description", RSS_1_0_NS)) {
 					it.description = get_content(itnode);
 				} else if (node_is(itnode, "date", DC_URI)) {
-					it.pubDate = w3cdtf_to_rfc822(get_content(itnode));
+					it.pubDate = date::format(get_content(itnode));
 				} else if (node_is(itnode, "encoded", CONTENT_URI)) {
 					it.content_encoded = get_content(itnode);
 				} else if (node_is(itnode, "summary", ITUNES_URI)) {

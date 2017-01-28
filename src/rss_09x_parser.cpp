@@ -4,10 +4,12 @@
  * for more information.
  */
 
+#include <cstring>
 #include "rsspp_internal.h"
 #include "utils.h"
 #include "exception.h"
-#include <cstring>
+#include "date.h"
+
 
 using namespace feedpp;
 
@@ -81,9 +83,9 @@ item rss_09x_parser::parse_item(xmlNode * itemNode) {
 			if (isPermaLink == "false")
 				it.guid_isPermaLink = false;
 		} else if (node_is(node, "pubDate", ns)) {
-			it.pubDate = get_content(node);
+			it.pubDate = date::format(get_content(node));
 		} else if (node_is(node, "date", DC_URI)) {
-			dc_date = w3cdtf_to_rfc822(get_content(node));
+			dc_date = date::format(get_content(node));
 		} else if (node_is(node, "author", ns)) {
 			std::string authorfield = get_content(node);
 			if (authorfield[authorfield.length()-1] == ')') {

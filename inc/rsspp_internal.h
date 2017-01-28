@@ -28,16 +28,12 @@ namespace feedpp {
     virtual void parse_feed(feed& f, xmlNode * rootNode) = 0;
     rss_parser(xmlDocPtr d) : doc(d) { }
     virtual ~rss_parser() { }
-    static std::string __w3cdtf_to_rfc822(const std::string& w3cdtf);
-    static std::string validate_date(const std::string& date);
-    static std::string to_rfc1123(const struct tm& date);
 
   protected:
     std::string get_content(xmlNode * node);
     std::string get_xml_content(xmlNode * node);
     void cleanup_namespaces(xmlNodePtr node);
     std::string get_prop(xmlNode * node, const char * prop, const char * ns = NULL);
-    std::string w3cdtf_to_rfc822(const std::string& w3cdtf);
     bool node_is(xmlNode * node, const char * name, const char * ns_uri = NULL);
     xmlDocPtr doc;
 
