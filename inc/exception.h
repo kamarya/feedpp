@@ -1,3 +1,8 @@
+/* Copyright (C) 2016 Behrooz Aliabadi
+ * Licensed under the MIT/X Consortium License.
+ * See file LICENSE for more information.
+ */
+
 #ifndef _EXCEPTION_H
 #define _EXCEPTION_H
 

@@ -1,3 +1,8 @@
+/* Copyright (C) 2016 Behrooz Aliabadi
+ * Licensed under the MIT/X Consortium License.
+ * See file LICENSE for more information.
+ */
+
 #include <cstring>
 #include <ctime>
 #include <locale>
@@ -41,7 +46,6 @@ namespace feedpp {
 
             if (p == nullptr)
             {
-
                 p = strptime(date.c_str(), "%t%Y-%m-%d", &tm_date);
             }
 
