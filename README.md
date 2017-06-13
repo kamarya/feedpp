@@ -1,5 +1,5 @@
 # Feed Plus Plus
-This is a C++ feed parser library. It is originally extracted from
+This is a C++ feed parser library using part of
 [Newsbeuter](https://github.com/akrennmair/newsbeuter).
 ## Build and Install
 
