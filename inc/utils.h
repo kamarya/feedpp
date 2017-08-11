@@ -112,6 +112,9 @@ class utils {
 		static std::string unescape_url(const std::string& url);
 		static void initialize_ssl_implementation(void);
 
+		static void extract_quote(std::string& line);
+		static std::string extract_text(std::string& html);
+
 	private:
 		static void append_escapes(std::string& str, char c);
 

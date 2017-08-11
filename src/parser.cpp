@@ -4,7 +4,7 @@
  * for more information.
  */
 
-#include <rsspp.h>
+#include <types.h>
 #include <exception.h>
 #include <utils.h>
 
@@ -30,7 +30,8 @@ namespace feedpp
 {
 
 parser::parser(unsigned int timeout, const char * user_agent, const char * proxy, const char * proxy_auth, curl_proxytype proxy_type)
-	: to(timeout), ua(user_agent), prx(proxy), prxauth(proxy_auth), prxtype(proxy_type), doc(0), lm(0) {
+	: to(timeout), ua(user_agent), prx(proxy), prxauth(proxy_auth), prxtype(proxy_type), doc(0), lm(0)
+{
 }
 
 parser::~parser()
@@ -57,13 +58,19 @@ static size_t handle_headers(void * ptr, size_t size, size_t nmemb, void * data)
 	header[size*nmemb] = '\0';
 
 	if (!strncasecmp("Last-Modified:", header, 14)) {
-		time_t r = curl_getdate(header+14, NULL);
-		if (r == -1) {
-		} else {
-			values->lastmodified = curl_getdate(header+14, NULL);
+		time_t r = curl_getdate(header + 14, NULL);
+		if (r == -1)
+		{
+		    //FIXME: do something here.
 		}
-	} else if (!strncasecmp("ETag:",header, 5)) {
-		values->etag = std::string(header+5);
+		else
+		{
+			values->lastmodified = curl_getdate(header + 14, NULL);
+		}
+	}
+	else if (!strncasecmp("ETag:",header, 5))
+	{
+		values->etag = std::string(header + 5);
 		utils::trim(values->etag);
 	}
 
@@ -129,7 +136,8 @@ feed parser::parse_url(const std::string& url,
   }
 
   curl_slist * custom_headers = NULL;
-  if (etag.length() > 0) {
+  if (etag.length() > 0)
+  {
     custom_headers = curl_slist_append(custom_headers, utils::strprintf("If-None-Match: %s", etag.c_str()).c_str());
     curl_easy_setopt(easyhandle, CURLOPT_HTTPHEADER, custom_headers);
   }
@@ -149,17 +157,22 @@ feed parser::parse_url(const std::string& url,
   long status;
   curl_easy_getinfo(easyhandle, CURLINFO_HTTP_CONNECTCODE, &status);
 
-  if (status >= 400) {/* ERROR */}
+  if (status >= 400)
+  {
+      LOG_ERROR("HTTP error (%ld)", status);
+  }
 
   if (!ehandle)
     curl_easy_cleanup(easyhandle);
 
-  if (ret != 0) {
+  if (ret != 0)
+  {
     throw exception(curl_easy_strerror(ret), ret);
   }
 
 
-  if (buf.length() > 0) {
+  if (buf.length() > 0)
+  {
     return parse_buffer(buf.c_str(), buf.length(), url.c_str());
   }
 
@@ -167,9 +180,11 @@ feed parser::parse_url(const std::string& url,
 }
 
 
-feed parser::parse_buffer(const char * buffer, size_t size, const char * url) {
+feed parser::parse_buffer(const char * buffer, size_t size, const char * url)
+{
 	doc = xmlReadMemory(buffer, size, url, NULL, XML_PARSE_RECOVER | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-	if (doc == NULL) {
+	if (doc == NULL)
+	{
 		throw exception(std::string("could not parse buffer"));
 	}
 
@@ -177,7 +192,8 @@ feed parser::parse_buffer(const char * buffer, size_t size, const char * url) {
 
 	feed f = parse_xmlnode(root_element);
 
-	if (doc->encoding) {
+	if (doc->encoding)
+	{
 		f.encoding = (const char *)doc->encoding;
 	}
 
@@ -204,68 +220,95 @@ feed parser::parse_file(const std::string& filename)
 	return f;
 }
 
-feed parser::parse_xmlnode(xmlNode* node) {
+feed parser::parse_xmlnode(xmlNode* node)
+{
 	feed f;
 
-	if (node) {
-		if (node->name && node->type == XML_ELEMENT_NODE) {
-			if (strcmp((const char *)node->name, "rss")==0) {
+	if (node)
+	{
+		if (node->name && node->type == XML_ELEMENT_NODE)
+		{
+			if (strcmp((const char *)node->name, "rss") == 0)
+			{
 				const char * version = (const char *)xmlGetProp(node, (const xmlChar *)"version");
-				if (!version) {
+				if (!version)
+				{
 					xmlFree((void *)version);
 					throw exception(std::string("no RSS version"));
 				}
-				if (strcmp(version, "0.91")==0)
+				if (strcmp(version, "0.91") == 0)
 					f.rss_version = RSS_0_91;
-				else if (strcmp(version, "0.92")==0)
+				else if (strcmp(version, "0.92") == 0)
 					f.rss_version = RSS_0_92;
-				else if (strcmp(version, "0.94")==0)
+				else if (strcmp(version, "0.94") == 0)
 					f.rss_version = RSS_0_94;
-				else if (strcmp(version, "2.0")==0 || strcmp(version, "2")==0)
+				else if (strcmp(version, "2.0") == 0 || strcmp(version, "2") == 0)
 					f.rss_version = RSS_2_0;
-				else if (strcmp(version, "1.0")==0)
+				else if (strcmp(version, "1.0") == 0)
 					f.rss_version = RSS_0_91;
-				else {
+				else
+				{
 					xmlFree((void *)version);
 					throw exception(std::string("invalid RSS version"));
 				}
 				xmlFree((void *)version);
-			} else if (strcmp((const char *)node->name, "RDF")==0) {
+			}
+			else if (strcmp((const char *)node->name, "RDF") == 0)
+			{
 				f.rss_version = RSS_1_0;
-			} else if (strcmp((const char *)node->name, "feed")==0) {
-				if (node->ns && node->ns->href) {
-					if (strcmp((const char *)node->ns->href, ATOM_0_3_URI)==0) {
+			}
+			else if (strcmp((const char *)node->name, "feed") == 0)
+			{
+				if (node->ns && node->ns->href)
+				{
+					if (strcmp((const char *)node->ns->href, ATOM_0_3_URI)==0)
+					{
 						f.rss_version = ATOM_0_3;
-					} else if (strcmp((const char *)node->ns->href, ATOM_1_0_URI)==0) {
+					}
+					else if (strcmp((const char *)node->ns->href, ATOM_1_0_URI)==0)
+					{
 						f.rss_version = ATOM_1_0;
-					} else {
+					}
+					else
+					{
 						const char * version = (const char *)xmlGetProp(node, (const xmlChar *)"version");
-						if (!version) {
+						if (!version)
+						{
 							xmlFree((void *)version);
 							throw exception(std::string("invalid Atom version"));
 						}
-						if (strcmp(version, "0.3")==0) {
+						if (strcmp(version, "0.3")==0)
+						{
 							xmlFree((void *)version);
 							f.rss_version = ATOM_0_3_NONS;
-						} else {
+						}
+						else
+						{
 							xmlFree((void *)version);
 							throw exception(std::string("invalid Atom version"));
 						}
 					}
-				} else {
+				}
+				else
+				{
 					throw exception(std::string("no Atom version"));
 				}
 			}
 
 			std::shared_ptr<rss_parser> parser = factory::get_object(f, doc);
 
-			try {
+			try
+			{
 				parser->parse_feed(f, node);
-			} catch (exception& e) {
+			}
+			catch (exception& e)
+			{
 				throw;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		throw exception(std::string("XML root node is NULL"));
 	}
 

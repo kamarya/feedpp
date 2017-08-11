@@ -7,7 +7,7 @@
 #ifndef _RSSPP_INTERNAL_H
 #define _RSSPP_INTERNAL_H
 
-#include <rsspp.h>
+#include <types.h>
 #include <memory>
 
 #define CONTENT_URI         "http://purl.org/rss/1.0/modules/content/"

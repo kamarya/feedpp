@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "log.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,7 +37,8 @@ GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
 namespace feedpp {
 
-std::vector<std::string> utils::tokenize_quoted(const std::string& str, std::string delimiters) {
+std::vector<std::string> utils::tokenize_quoted(const std::string& str, std::string delimiters)
+{
 	/*
 	 * This function tokenizes strings, obeying quotes and throwing away comments that start
 	 * with a '#'.
@@ -191,19 +193,20 @@ std::vector<std::string> utils::tokenize_nl(const std::string& str, std::string 
 	std::string::size_type pos = str.find_first_of(delimiters, last_pos);
 	unsigned int i;
 
-	//LOG(LOG_DEBUG,"utils::tokenize_nl: last_pos = %u",last_pos);
-	if (last_pos != std::string::npos) {
-		for (i=0; i<last_pos; ++i) {
+	if (last_pos != std::string::npos)
+	{
+		for (i=0; i<last_pos; ++i)
+		{
 			tokens.push_back(std::string("\n"));
 		}
 	}
 
-	while (std::string::npos != pos || std::string::npos != last_pos) {
+	while (std::string::npos != pos || std::string::npos != last_pos)
+	{
 		tokens.push_back(str.substr(last_pos, pos - last_pos));
-		//LOG(LOG_DEBUG,"utils::tokenize_nl: substr = %s", str.substr(last_pos, pos - last_pos).c_str());
 		last_pos = str.find_first_not_of(delimiters, pos);
-		//LOG(LOG_DEBUG,"utils::tokenize_nl: pos - last_pos = %u", last_pos - pos);
-		for (i=0; last_pos != std::string::npos && pos != std::string::npos && i<(last_pos - pos); ++i) {
+		for (i=0; last_pos != std::string::npos && pos != std::string::npos && i<(last_pos - pos); ++i)
+		{
 			tokens.push_back(std::string("\n"));
 		}
 		pos = str.find_first_of(delimiters, last_pos);
@@ -212,17 +215,16 @@ std::vector<std::string> utils::tokenize_nl(const std::string& str, std::string 
 	return tokens;
 }
 
-void utils::remove_fs_lock(const std::string& lock_file) {
-	//LOG(LOG_DEBUG, "utils::remove_fs_lock: removed lockfile %s", lock_file.c_str());
+void utils::remove_fs_lock(const std::string& lock_file)
+{
 	::unlink(lock_file.c_str());
 }
 
-bool utils::try_fs_lock(const std::string& lock_file, pid_t & pid) {
+bool utils::try_fs_lock(const std::string& lock_file, pid_t & pid)
+{
 	int fd;
 	// pid == 0 indicates that something went majorly wrong during locking
 	pid = 0;
-
-	//LOG(LOG_DEBUG, "utils::try_fs_lock: trying to lock %s", lock_file.c_str());
 
 	// first, we open (and possibly create) the lock file
 	fd = ::open(lock_file.c_str(), O_RDWR | O_CREAT, 0600);
@@ -267,20 +269,39 @@ std::string utils::get_command_output(const std::string& cmd) {
 	return buf;
 }
 
-void utils::extract_filter(const std::string& line, std::string& filter, std::string& url) {
+void utils::extract_filter(const std::string& line, std::string& filter, std::string& url)
+{
 	std::string::size_type pos = line.find_first_of(":", 0);
 	std::string::size_type pos1 = line.find_first_of(":", pos + 1);
 	filter = line.substr(pos+1, pos1 - pos - 1);
 	pos = pos1;
 	url = line.substr(pos+1, line.length() - pos);
-	//LOG(LOG_DEBUG, "utils::extract_filter: %s -> filter: %s url: %s", line.c_str(), filter.c_str(), url.c_str());
 }
 
-//static size_t my_write_data(void *buffer, size_t size, size_t nmemb, void *userp) {
-//	std::string * pbuf = static_cast<std::string *>(userp);
-//	pbuf->append(static_cast<const char *>(buffer), size * nmemb);
-//	return size * nmemb;
-//}
+void utils::extract_quote(std::string& line)
+{
+	std::string::size_type pos = line.find_first_of("\"", 0);
+	if (pos == std::string::npos) return;
+	std::string::size_type pos1 = line.find_first_of("\"", pos + 1);
+	if (pos1 == std::string::npos) return;
+	line = line.substr(pos+1, pos1 - pos - 1);
+}
+
+
+std::string utils::extract_text(std::string& html)
+{
+    std::string ret(html);
+    std::string::size_type start = 0;
+
+	std::string::size_type pos = html.find_first_of("<", start);
+	if (pos == std::string::npos) return ret;
+
+	std::string::size_type posl = html.find_first_of(">", pos + 1);
+	if (posl == std::string::npos) return ret;
+
+	ret = html.substr(pos + 1, posl - pos - 1);
+	return ret;
+}
 
 
 void utils::run_command(const std::string& cmd, const std::string& input) {
@@ -296,10 +317,8 @@ void utils::run_command(const std::string& cmd, const std::string& input) {
 		dup2(fd, 0);
 		dup2(fd, 1);
 		dup2(fd, 2);
-		//LOG(LOG_DEBUG, "utils::run_command: %s '%s'", cmd.c_str(), input.c_str());
 		execlp(cmd.c_str(), cmd.c_str(), input.c_str(), NULL);
-		//LOG(LOG_DEBUG, "utils::run_command: execlp of %s failed: %s", cmd.c_str(), strerror(errno));
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	default:
 		break;
@@ -314,7 +333,8 @@ std::string utils::run_program(char * argv[], const std::string& input) {
 	pipe(opipe);
 
 	int rc = fork();
-	switch (rc) {
+	switch (rc)
+	{
 	case -1:
 		break;
 	case 0: { // child:
@@ -328,7 +348,7 @@ std::string utils::run_program(char * argv[], const std::string& input) {
 		if (errfd != -1) dup2(errfd, 2);
 
 		execvp(argv[0], argv);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	default: {
 		close(ipipe[0]);
@@ -347,7 +367,8 @@ std::string utils::run_program(char * argv[], const std::string& input) {
 	return buf;
 }
 
-std::string utils::resolve_tilde(const std::string& str) {
+std::string utils::resolve_tilde(const std::string& str)
+{
 	const char * homedir;
 	std::string filepath;
 
@@ -360,26 +381,36 @@ std::string utils::resolve_tilde(const std::string& str) {
 		}
 	}
 
-	if (strcmp(homedir,"")!=0) {
-		if (str == "~") {
+	if (strcmp(homedir,"")!=0)
+	{
+		if (str == "~")
+		{
 			filepath.append(homedir);
-		} else if (str.substr(0,2) == "~/") {
+		}
+		else if (str.substr(0,2) == "~/")
+		{
 			filepath.append(homedir);
 			filepath.append(1,'/');
 			filepath.append(str.substr(2,str.length()-2));
-		} else {
+		}
+		else
+		{
 			filepath.append(str);
 		}
-	} else {
+	}
+	else
+	{
 		filepath.append(str);
 	}
 
 	return filepath;
 }
 
-std::string utils::replace_all(std::string str, const std::string& from, const std::string& to) {
+std::string utils::replace_all(std::string str, const std::string& from, const std::string& to)
+{
 	std::string::size_type s = str.find(from);
-	while (s != std::string::npos) {
+	while (s != std::string::npos)
+	{
 		str.replace(s,from.length(), to);
 		s = str.find(from, s + to.length());
 	}
@@ -387,7 +418,8 @@ std::string utils::replace_all(std::string str, const std::string& from, const s
 }
 
 
-template<class T> std::string utils::to_string(T var) {
+template<class T> std::string utils::to_string(T var)
+{
 	std::stringstream ret;
 	ret << var;
 	return ret.str();
@@ -401,16 +433,20 @@ template std::string utils::to_string<unsigned int>(unsigned int var);
 std::string utils::absolute_url(const std::string& url, const std::string& link) {
 	xmlChar * newurl = xmlBuildURI((const xmlChar *)link.c_str(), (const xmlChar *)url.c_str());
 	std::string retval;
-	if (newurl) {
+	if (newurl)
+	{
 		retval = (const char *)newurl;
 		xmlFree(newurl);
-	} else {
+	}
+	else
+	{
 		retval = link;
 	}
 	return retval;
 }
 
-std::string utils::strprintf(const char * format, ...) {
+std::string utils::strprintf(const char * format, ...)
+{
 	if (!format)
 		return std::string();
 
@@ -419,7 +455,7 @@ std::string utils::strprintf(const char * format, ...) {
 	va_list ap;
 	va_start(ap, format);
 
-	unsigned int len = vsnprintf(buffer, sizeof(buffer), format, ap)+1;
+	unsigned int len = vsnprintf(buffer, sizeof(buffer), format, ap) + 1;
 
 	va_end(ap);
 	if (len <= sizeof(buffer))
@@ -438,15 +474,18 @@ std::string utils::strprintf(const char * format, ...) {
 }
 
 
-unsigned int utils::to_u(const std::string& str) {
+unsigned int utils::to_u(const std::string& str)
+{
 	std::istringstream is(str);
 	unsigned int u = 0;
 	is >> u;
 	return u;
 }
 
-void utils::append_escapes(std::string& str, char c) {
-	switch (c) {
+void utils::append_escapes(std::string& str, char c)
+{
+	switch (c)
+	{
 	case 'n':
 		str.append("\n");
 		break;
@@ -467,9 +506,11 @@ void utils::append_escapes(std::string& str, char c) {
 	}
 }
 
-bool utils::is_valid_color(const std::string& color) {
+bool utils::is_valid_color(const std::string& color)
+{
 	const char * colors[] = { "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "default", NULL };
-	for (unsigned int i=0; colors[i]; i++) {
+	for (unsigned int i=0; colors[i]; i++)
+	{
 		if (color == colors[i])
 			return true;
 	}
@@ -487,12 +528,14 @@ bool utils::is_valid_attribute(const std::string& attrib) {
 	return false;
 }
 
-std::vector<std::pair<unsigned int, unsigned int>> utils::partition_indexes(unsigned int start, unsigned int end, unsigned int parts) {
+std::vector<std::pair<unsigned int, unsigned int>> utils::partition_indexes(unsigned int start, unsigned int end, unsigned int parts)
+{
 	std::vector<std::pair<unsigned int, unsigned int>> partitions;
 	unsigned int count = end - start + 1;
 	unsigned int size = count / parts;
 
-	for (unsigned int i=0; i<parts-1; i++) {
+	for (unsigned int i=0; i<parts-1; i++)
+	{
 		partitions.push_back(std::pair<unsigned int, unsigned int>(start, start + size - 1));
 		start += size;
 	}
@@ -502,10 +545,12 @@ std::vector<std::pair<unsigned int, unsigned int>> utils::partition_indexes(unsi
 }
 
 
-std::string utils::join(const std::vector<std::string>& strings, const std::string& separator) {
+std::string utils::join(const std::vector<std::string>& strings, const std::string& separator)
+{
 	std::string result;
 
-	for (auto str : strings) {
+	for (auto str : strings)
+	{
 		result.append(str);
 		result.append(separator);
 	}
@@ -516,21 +561,27 @@ std::string utils::join(const std::vector<std::string>& strings, const std::stri
 	return result;
 }
 
-bool utils::is_special_url(const std::string& url) {
+bool utils::is_special_url(const std::string& url)
+{
 	return url.substr(0,6) == "query:" || url.substr(0,7) == "filter:" || url.substr(0,5) == "exec:";
 }
 
-bool utils::is_http_url(const std::string& url) {
+bool utils::is_http_url(const std::string& url)
+{
 	return url.substr(0,7) == "http://" || url.substr(0,8) == "https://";
 }
 
-std::string utils::censor_url(const std::string& url) {
+std::string utils::censor_url(const std::string& url)
+{
 	std::string rv;
-	if (url.length() > 0 && !utils::is_special_url(url)) {
+	if (url.length() > 0 && !utils::is_special_url(url))
+	{
 		const char * myuri = url.c_str();
 		xmlURIPtr uri = xmlParseURI(myuri);
-		if (uri) {
-			if (uri->user) {
+		if (uri)
+		{
+			if (uri->user)
+			{
 				xmlFree(uri->user);
 				uri->user = (char *)xmlStrdup((const xmlChar *)"*:*");
 			}
@@ -539,51 +590,64 @@ std::string utils::censor_url(const std::string& url) {
 			rv = (const char *)uristr;
 			xmlFree(uristr);
 			xmlFreeURI(uri);
-		} else
-			return url;
-	} else {
+		}
+		else return url;
+	}
+	else
+	{
 		rv = url;
 	}
 	return rv;
 }
 
 
-void utils::trim(std::string& str) {
-	while (str.length() > 0 && ::isspace(str[0])) {
+void utils::trim(std::string& str)
+{
+	while (str.length() > 0 && ::isspace(str[0]))
+	{
 		str.erase(0,1);
 	}
 	trim_end(str);
 }
 
-void utils::trim_end(std::string& str) {
-	std::string::size_type pos = str.length()-1;
-	while (str.length()>0 && (str[pos] == '\n' || str[pos] == '\r')) {
+void utils::trim_end(std::string& str)
+{
+	std::string::size_type pos = str.length() - 1;
+	while (str.length()>0 && (str[pos] == '\n' || str[pos] == '\r'))
+	{
 		str.erase(pos);
 		pos--;
 	}
 }
 
-std::string utils::quote(const std::string& str) {
+std::string utils::quote(const std::string& str)
+{
 	std::string rv = replace_all(str, "\"", "\\\"");
 	rv.insert(0, "\"");
 	rv.append("\"");
 	return rv;
 }
 
-unsigned int utils::get_random_value(unsigned int max) {
+unsigned int utils::get_random_value(unsigned int max)
+{
 	static bool initialized = false;
-	if (!initialized) {
+	if (!initialized)
+	{
 		initialized = true;
 		srand(~(time(NULL) ^ getpid() ^ getppid()));
 	}
 	return static_cast<unsigned int>(rand() % max);
 }
 
-std::string utils::quote_if_necessary(const std::string& str) {
+std::string utils::quote_if_necessary(const std::string& str)
+{
 	std::string result;
-	if (str.find_first_of(" ", 0) == std::string::npos) {
+	if (str.find_first_of(" ", 0) == std::string::npos)
+	{
 		result = str;
-	} else {
+	}
+	else
+	{
 		result = utils::replace_all(str, "\"", "\\\"");
 		result.insert(0, "\"");
 		result.append("\"");
@@ -592,11 +656,14 @@ std::string utils::quote_if_necessary(const std::string& str) {
 }
 
 
-std::string utils::get_content(xmlNode * node) {
+std::string utils::get_content(xmlNode * node)
+{
 	std::string retval;
-	if (node) {
+	if (node)
+	{
 		xmlChar * content = xmlNodeGetContent(node);
-		if (content) {
+		if (content)
+		{
 			retval = (const char *)content;
 			xmlFree(content);
 		}
@@ -604,15 +671,18 @@ std::string utils::get_content(xmlNode * node) {
 	return retval;
 }
 
-std::string utils::get_prop(xmlNode * node, const char * prop, const char * ns) {
+std::string utils::get_prop(xmlNode * node, const char * prop, const char * ns)
+{
 	std::string retval;
-	if (node) {
+	if (node)
+	{
 		xmlChar * value;
 		if (ns)
 			value = xmlGetProp(node, (xmlChar *)prop);
 		else
 			value = xmlGetNsProp(node, (xmlChar *)prop, (xmlChar *)ns);
-		if (value) {
+		if (value)
+		{
 			retval = (const char*)value;
 			xmlFree(value);
 		}
@@ -620,7 +690,8 @@ std::string utils::get_prop(xmlNode * node, const char * prop, const char * ns) 
 	return retval;
 }
 
-unsigned long utils::get_auth_method(const std::string& type) {
+unsigned long utils::get_auth_method(const std::string& type)
+{
 	if (type == "any")
 		return CURLAUTH_ANY;
 	if (type == "basic")
@@ -640,12 +711,13 @@ unsigned long utils::get_auth_method(const std::string& type) {
 	if (type == "anysafe")
 		return CURLAUTH_ANYSAFE;
 	if (type != "") {
-		//LOG(LOG_USERERROR, "you configured an invalid proxy authentication method: %s", type.c_str());
+		LOG_ERROR("you configured an invalid proxy authentication method: %s", type.c_str());
 	}
 	return CURLAUTH_ANY;
 }
 
-curl_proxytype utils::get_proxy_type(const std::string& type) {
+curl_proxytype utils::get_proxy_type(const std::string& type)
+{
 	if (type == "http")
 		return CURLPROXY_HTTP;
 	if (type == "socks4")
@@ -657,22 +729,27 @@ curl_proxytype utils::get_proxy_type(const std::string& type) {
 		return CURLPROXY_SOCKS4A;
 #endif
 
-	if (type != "") {
-		//LOG(LOG_USERERROR, "you configured an invalid proxy type: %s", type.c_str());
+	if (type != "")
+	{
+		LOG_ERROR("you configured an invalid proxy type: %s", type.c_str());
 	}
 	return CURLPROXY_HTTP;
 }
 
-std::string utils::escape_url(const std::string& url) {
+std::string utils::escape_url(const std::string& url)
+{
 	return replace_all(replace_all(url,"?","%3F"), "&", "%26");
 }
 
-std::string utils::unescape_url(const std::string& url) {
+std::string utils::unescape_url(const std::string& url)
+{
 	return replace_all(replace_all(url,"%3F","?"), "%26", "&");
 }
 
-std::wstring utils::clean_nonprintable_characters(std::wstring text) {
-	for (size_t idx=0; idx<text.size(); ++idx) {
+std::wstring utils::clean_nonprintable_characters(std::wstring text)
+{
+	for (size_t idx=0; idx<text.size(); ++idx)
+	{
 		if (!iswprint(text[idx]))
 			text[idx] = L'\uFFFD';
 	}
@@ -687,26 +764,33 @@ std::wstring utils::clean_nonprintable_characters(std::wstring text) {
 static std::mutex * openssl_mutexes = NULL;
 static int openssl_mutexes_size = 0;
 
-static void openssl_mth_locking_function(int mode, int n, const char * file, int line) {
-	if (n < 0 || n >= openssl_mutexes_size) {
-		//LOG(LOG_ERROR,"openssl_mth_locking_function: index is out of bounds (called by %s:%d)", file, line);
+static void openssl_mth_locking_function(int mode, int n, const char * file, int line)
+{
+	if (n < 0 || n >= openssl_mutexes_size)
+	{
+		LOG_ERROR("openssl_mth_locking_function: index is out of bounds (called by %s:%d)", file, line);
 		return;
 	}
-	if (mode & CRYPTO_LOCK) {
-		//LOG(LOG_DEBUG, "OpenSSL lock %d: %s:%d", n, file, line);
+	if (mode & CRYPTO_LOCK)
+	{
+		LOG_DEBUG("OpenSSL lock %d: %s:%d", n, file, line);
 		openssl_mutexes[n].lock();
-	} else {
-		//LOG(LOG_DEBUG, "OpenSSL unlock %d: %s:%d", n, file, line);
+	}
+	else
+	{
+		LOG_DEBUG("OpenSSL unlock %d: %s:%d", n, file, line);
 		openssl_mutexes[n].unlock();
 	}
 }
 
-static unsigned long openssl_mth_id_function(void) {
+static unsigned long openssl_mth_id_function(void)
+{
 	return (unsigned long)pthread_self();
 }
 #endif
 
-void utils::initialize_ssl_implementation(void) {
+void utils::initialize_ssl_implementation(void)
+{
 #if HAVE_OPENSSL
 	openssl_mutexes_size = CRYPTO_num_locks();
 	openssl_mutexes = new std::mutex[openssl_mutexes_size];

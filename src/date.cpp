@@ -6,19 +6,26 @@
 #include <cstring>
 #include <ctime>
 #include <locale>
-#include <regex>
 #include <iostream>
 #include <array>
 #include <algorithm>
 #include "log.h"
 #include "date.h"
 
+#ifdef USE_BOOST_REGEX
+#include <boost/regex.hpp>
+#define REGEX_NS boost
+#else
+#include <regex>
+#define REGEX_NS std
+#endif
+
 namespace feedpp {
 
     bool date::validate(const std::string& date, const char* str_regex)
     {
-        std::regex regx(str_regex);
-        return std::regex_match(date, regx);
+        REGEX_NS::regex regx(str_regex);
+        return REGEX_NS::regex_match(date, regx);
     }
 
     std::string date::format(const std::string& date)
@@ -33,6 +40,11 @@ namespace feedpp {
         {
             p = strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm_date);
             if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_RFC822.");
+        }
+        else if (date::validate(date, REGEX_W3CDTF))
+        {
+            p = w3cdtf_to_tm(date, &tm_date);
+            if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_W3CDTF.");
         }
         else if (date::validate(date, REGEX_ISO8601))
         {
@@ -49,12 +61,13 @@ namespace feedpp {
                 p = strptime(date.c_str(), "%t%Y-%m-%d", &tm_date);
             }
 
-            if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_ISO8601.");
-        }
-        else if (date::validate(date, REGEX_W3CDTF))
-        {
-            p = w3cdtf_to_tm(date, &tm_date);
-            if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_W3CDTF.");
+            if (p == nullptr)
+            {
+                // warning : skip the time-zone
+                p = strptime(date.c_str(), "%FT%T", &tm_date);
+            }
+
+            if (p == nullptr) LOG_ERROR("REGEX_ISO8601 : strptime() returned with error for (%s).", date.c_str());
         }
         else
         {

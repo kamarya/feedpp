@@ -9,13 +9,15 @@
 #include "utils.h"
 #include "exception.h"
 #include "date.h"
+#include "log.h"
 
 
 using namespace feedpp;
 
 namespace feedpp {
 
-void rss_20_parser::parse_feed(feed& f, xmlNode * rootNode) {
+void rss_20_parser::parse_feed(feed& f, xmlNode * rootNode)
+{
 	if (!rootNode)
 		throw exception(std::string("XML root node is NULL"));
 
@@ -59,56 +61,97 @@ void rss_09x_parser::parse_feed(feed& f, xmlNode * rootNode) {
 	}
 }
 
-item rss_09x_parser::parse_item(xmlNode * itemNode) {
+item rss_09x_parser::parse_item(xmlNode * itemNode)
+{
 	item it;
 	std::string author;
 	std::string dc_date;
 
-	for (xmlNode * node = itemNode->children; node != NULL; node = node->next) {
-		if (node_is(node, "title", ns)) {
+	for (xmlNode * node = itemNode->children; node != NULL; node = node->next)
+	{
+		if (node_is(node, "title", ns))
+		{
 			it.title = get_content(node);
 			it.title_type = "text";
-		} else if (node_is(node, "link", ns)) {
+		}
+		else if (node_is(node, "link", ns))
+		{
 			it.link = get_content(node);
-		} else if (node_is(node, "description", ns)) {
+		}
+		else if (node_is(node, "description", ns))
+		{
 			it.description = get_content(node);
-		} else if (node_is(node, "encoded", CONTENT_URI)) {
+
+            if (xmlChildElementCount(node) == 0)
+            {
+                it.description_type = (it.description.find_first_of("<") == std::string::npos)?"text":"html";
+            }
+            else
+            {
+                it.description_type = "html";
+            }
+		}
+		else if (node_is(node, "encoded", CONTENT_URI))
+		{
 			it.content_encoded = get_content(node);
-		} else if (node_is(node, "summary", ITUNES_URI)) {
+		}
+		else if (node_is(node, "summary", ITUNES_URI))
+		{
 			it.itunes_summary = get_content(node);
-		} else if (node_is(node, "guid", ns)) {
+		}
+		else if (node_is(node, "guid", ns))
+		{
 			it.guid = get_content(node);
 			it.guid_isPermaLink = true;
 			std::string isPermaLink = get_prop(node,"isPermaLink");
 			if (isPermaLink == "false")
 				it.guid_isPermaLink = false;
-		} else if (node_is(node, "pubDate", ns)) {
+		}
+		else if (node_is(node, "pubDate", ns))
+		{
 			it.pubDate = date::format(get_content(node));
-		} else if (node_is(node, "date", DC_URI)) {
+		}
+		else if (node_is(node, "date", DC_URI))
+		{
 			dc_date = date::format(get_content(node));
-		} else if (node_is(node, "author", ns)) {
+		}
+		else if (node_is(node, "author", ns))
+		{
 			std::string authorfield = get_content(node);
-			if (authorfield[authorfield.length()-1] == ')') {
+			if (authorfield[authorfield.length()-1] == ')')
+			{
 				it.author_email = feedpp::utils::tokenize(authorfield, " ")[0];
 				unsigned int start, end;
 				end = authorfield.length()-2;
 				for (start = end; start > 0 && authorfield[start] != '('; start--) { }
 				it.author = authorfield.substr(start+1, end-start);
-			} else {
+			}
+			else
+			{
 				it.author_email = authorfield;
 				it.author = authorfield;
 			}
-		} else if (node_is(node, "creator", DC_URI)) {
+		}
+		else if (node_is(node, "creator", DC_URI))
+		{
 			author = get_content(node);
-		} else if (node_is(node, "enclosure", ns)) {
+		}
+		else if (node_is(node, "enclosure", ns))
+		{
 			it.enclosure_url = get_prop(node, "url");
 			it.enclosure_type = get_prop(node, "type");
-		} else if (node_is(node, "content", MEDIA_RSS_URI)) {
+		}
+		else if (node_is(node, "content", MEDIA_RSS_URI))
+		{
 			it.enclosure_url = get_prop(node, "url");
 			it.enclosure_type = get_prop(node, "type");
-		} else if (node_is(node, "group", MEDIA_RSS_URI)) {
-			for (xmlNode * mnode = node->children; mnode != NULL; mnode = mnode->next) {
-				if (node_is(mnode, "content", MEDIA_RSS_URI)) {
+		}
+		else if (node_is(node, "group", MEDIA_RSS_URI))
+		{
+			for (xmlNode * mnode = node->children; mnode != NULL; mnode = mnode->next)
+			{
+				if (node_is(mnode, "content", MEDIA_RSS_URI))
+				{
 					it.enclosure_url = get_prop(mnode, "url");
 					it.enclosure_type = get_prop(mnode, "type");
 				}
@@ -116,11 +159,13 @@ item rss_09x_parser::parse_item(xmlNode * itemNode) {
 		}
 	}
 
-	if (it.author == "") {
+	if (it.author == "")
+	{
 		it.author = author;
 	}
 
-	if (it.pubDate == "") {
+	if (it.pubDate == "")
+	{
 		it.pubDate = dc_date;
 	}
 
