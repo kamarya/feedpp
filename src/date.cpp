@@ -39,16 +39,13 @@ namespace feedpp {
         if (date::validate(date, REGEX_RFC822))
         {
             p = strptime(date.c_str(), "%a, %d %b %Y %H:%M:%S", &tm_date);
-            if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_RFC822.");
         }
         else if (date::validate(date, REGEX_W3CDTF))
         {
             p = w3cdtf_to_tm(date, &tm_date);
-            if (p == nullptr) LOG_ERROR("strptime() returned with error for REGEX_W3CDTF.");
         }
         else if (date::validate(date, REGEX_ISO8601))
         {
-            //LOG_DEBUG("date : %s", date.c_str());
             p = strptime(date.c_str(), "%Y-%m-%dT%H:%M:%SZ", &tm_date);
 
             if (p == nullptr)
@@ -66,14 +63,18 @@ namespace feedpp {
                 // warning : skip the time-zone
                 p = strptime(date.c_str(), "%FT%T", &tm_date);
             }
-
-            if (p == nullptr) LOG_ERROR("REGEX_ISO8601 : strptime() returned with error for (%s).", date.c_str());
+        }
+        else if (date::validate(date, REGEX_RFC822_RED))
+        {
+            p = strptime(date.c_str(), "%a, %d %b %Y %T", &tm_date);
         }
         else
         {
             LOG_ERROR("date::format() failed to proccess the date.");
             return ret;
         }
+
+        if (p == nullptr) LOG_ERROR("strptime() returned with error.");
 
         ret = std::string(std::asctime(&tm_date));
 
