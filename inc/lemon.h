@@ -116,7 +116,8 @@ namespace lemon {
     // Implements a null output policy
     struct nothing {
       template<typename T>
-      lemon::output::nothing& operator << (const T& val) {
+      lemon::output::nothing& operator << (const T& val) {  
+        (void)(val);
         return *this;
       }
     };
