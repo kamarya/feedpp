@@ -1,6 +1,6 @@
 # Feed Plus Plus [![Build Status](https://travis-ci.org/kamarya/feedpp.svg?branch=master)](https://travis-ci.org/kamarya/feedpp)
-This is a C++ feed parser library adapted from
-[Newsbeuter](https://github.com/akrennmair/newsbeuter).
+A C++ feed parser library adapted from [Newsbeuter](https://github.com/akrennmair/newsbeuter). The goal is reusing the mature feed parser code and modernize it
+as a general purpose library.
 ## Build and Install
 
 ```
