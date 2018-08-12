@@ -1,6 +1,6 @@
 AC_PREREQ([2.69])
 AC_INIT([feedpp], [0.5.0], [https://github/behrooza])
-AM_INIT_AUTOMAKE([feedpp],[0.5.0])
+AM_INIT_AUTOMAKE
 
 AC_CONFIG_SRCDIR([src/parser.cpp])
 AC_CONFIG_HEADERS([config.h])
