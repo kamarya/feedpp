@@ -1,8 +1,8 @@
 AC_PREREQ([2.69])
-AC_INIT([feedpp], [0.5.0], [https://github/behrooza])
+AC_INIT([feedpp], [0.5.0], [https://github/kamarya])
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_SRCDIR([src/parser.cpp])
+AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_CONFIG_MACRO_DIRS([m4])
@@ -25,6 +25,7 @@ LIBCURL_REQUIRED_VERSION=7.0.0
 
 PKG_CHECK_MODULES([libxml2], [libxml-2.0 >= $LIBXML2_REQUIRED_VERSION])
 PKG_CHECK_MODULES([libcurl], [libcurl >= $LIBCURL_REQUIRED_VERSION])
+#PKG_CHECK_MODULES([CHECK], [check])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h langinfo.h unistd.h])
